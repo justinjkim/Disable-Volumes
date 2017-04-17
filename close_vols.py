@@ -52,6 +52,7 @@ def close_volumes(original, vols):
 # feed the oversized vols into the script    
 with open('/home/y/tmp/sm-pool101_bf2_oversized_vols.txt') as f3:
     content = f3.read().splitlines()
+    content_number_of_lines = len(content)
 
 # so the user has the option of inputting any .json file
 filename = sys.argv[1]
@@ -78,4 +79,4 @@ def reformat():
 reformat()
 
 
-print "This script took %s seconds to execute." % (time.time() - start_time)
+print "This script took %s seconds to execute on %s oversized volumes." % (time.time() - start_time, content_number_of_lines)
