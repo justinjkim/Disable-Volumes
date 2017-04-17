@@ -21,14 +21,17 @@ f1.write(p)
 f1.close()
 
 
-
+# because the original .json files are not properly formatted .json files, we have to create a new file 
+# and make it into a real .json so that we can use the json module
 def close_volumes(original, vols):
-    """ because the original .json files are not properly formatted .json files, we have to create a new file and make it into a real .json so that we can use the json module  """
-
-
+   
+    # take out the ending comma, need to wait for the child process to terminate before moving on
     strip_comma = "sed -i '$s/},/}/' " + original
     subprocess.Popen([strip_comma], shell=True).wait()
-
+    
+    
+    # input the file into a new file with the opening and ending curly brace, to make it look like a real .json
+    # line 39 - 42 actually changes the values
     formatted = open('formatted_file.json', 'w')
     with open(original, 'r') as f2:
         raw_data = "{\n" + f2.read() + "\n}"
@@ -46,22 +49,24 @@ def close_volumes(original, vols):
     formatted.write(final_data)
     formatted.close()
 
-
-filename = sys.argv[1]
+# feed the oversized vols into the script    
 with open('/home/y/tmp/sm-pool101_bf2_oversized_vols.txt') as f3:
     content = f3.read().splitlines()
 
+# so the user has the option of inputting any .json file
+filename = sys.argv[1]
 # actually call and run the script!
 close_volumes(filename, content)
 
 
+# take out the opening and ending curly brace we added before in line 37
 with open('formatted_file.json', 'r') as fin:
     data = fin.read().splitlines(True)
 with open('formatted_file.json', 'w') as fout:
     fout.writelines(data[1:-1])
 
 
-
+# remove the indentation and add back the comma
 def reformat():
     reformat = "sed -e 's/^    //g' -e '$s/$/,/' -i formatted_file.json"
     try:
