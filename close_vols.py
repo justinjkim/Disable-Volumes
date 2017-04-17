@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-# This script creates a new .json file and automatically closes oversized vols resulting from the oversized-vols.sh script 
+""" This script creates a new .json file and automatically closes oversized vols resulting from the oversized-vols.sh script """
 import json
 import subprocess
 import sys
@@ -14,17 +14,20 @@ try:
     print "I'm here:\n %s" % (p)
 except subprocess.CalledProcessError as e:
     print "Error occured: %s" % (e)
-f1 = open('sm-pool101_bf2_oversized_vols.txt', 'w')
+except subprocess.CalledNameError:
+    print "Hmm, either you're not able to ssh, or the find-oversized-vols.sh is gone."
+f1 = open('/home/y/tmp/sm-pool101_bf2_oversized_vols.txt', 'w')
 f1.write(p)
 f1.close()
 
 
 
 def close_volumes(original, vols):
-    #because the original .json files are not properly formatted .json files, we have to create a new file and make it into a real .json so that we can use the json module  """
+    """ because the original .json files are not properly formatted .json files, we have to create a new file and make it into a real .json so that we can use the json module  """
+
 
     strip_comma = "sed -i '$s/},/}/' " + original
-    subprocess.Popen([strip_comma], shell=True)
+    subprocess.Popen([strip_comma], shell=True).wait()
 
     formatted = open('formatted_file.json', 'w')
     with open(original, 'r') as f2:
@@ -33,7 +36,7 @@ def close_volumes(original, vols):
     for volume in vols:
         try:
             formatted_data[volume]['allow_new'] = 0
-            print "Volume %s: Setting allow_new to 0" % (volume)
+            print "Volume %s: Setting allow_new to: 0" % (volume)
         except KeyError:
             print "Volume %s doesn't exist in this particular .json...wrong farm?" % (volume)
             continue
@@ -45,13 +48,13 @@ def close_volumes(original, vols):
 
 
 filename = sys.argv[1]
-with open('sm-pool101_bf2_oversized_vols.txt') as f3:
+with open('/home/y/tmp/sm-pool101_bf2_oversized_vols.txt') as f3:
     content = f3.read().splitlines()
 
 # actually call and run the script!
 close_volumes(filename, content)
 
-# take out the opening and ending curly brace
+
 with open('formatted_file.json', 'r') as fin:
     data = fin.read().splitlines(True)
 with open('formatted_file.json', 'w') as fout:
