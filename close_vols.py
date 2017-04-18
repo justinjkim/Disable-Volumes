@@ -60,7 +60,7 @@ filename = sys.argv[1]
 close_volumes(filename, content)
 
 
-# take out the opening and ending curly brace we added before in line 37
+# take out the opening and ending curly brace we added before 
 with open('formatted_file.json', 'r') as fin:
     data = fin.read().splitlines(True)
 with open('formatted_file.json', 'w') as fout:
@@ -69,7 +69,7 @@ with open('formatted_file.json', 'w') as fout:
 
 # remove the indentation and add back the comma
 def reformat():
-    reformat = "sed -e 's/^    //g' -e '$s/$/,/' -i formatted_file.json"
+    reformat = "sed -e 's/^    //g' -e 's/\":/\" :/g' -e '$s/$/,/' -i formatted_file.json"
     try:
         subprocess.Popen([reformat], shell=True)
         print "Ok, deleted the whitespaces..."
@@ -77,6 +77,5 @@ def reformat():
         print "Hmm, something wrong in removing the white spaces..."
 
 reformat()
-
 
 print "This script took %s seconds to execute on %s oversized volumes." % (time.time() - start_time, content_number_of_lines)
